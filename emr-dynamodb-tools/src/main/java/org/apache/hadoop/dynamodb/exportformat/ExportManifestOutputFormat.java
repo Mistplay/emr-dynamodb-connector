@@ -18,7 +18,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.GzipCodec;
+import org.apache.hadoop.io.compress.Lz4Codec;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordWriter;
@@ -45,11 +45,12 @@ public class ExportManifestOutputFormat<K> extends FileOutputFormat<K, Text> {
     Path file = FileOutputFormat.getTaskOutputPath(job, MANIFEST_FILENAME);
     FileSystem fs = file.getFileSystem(job);
     FSDataOutputStream fileOut = fs.create(file, progress);
-    if (getCompressOutput(job)) {
-      Class<? extends CompressionCodec> codecClass = getOutputCompressorClass(job, GzipCodec.class);
-      CompressionCodec codec = ReflectionUtils.newInstance(codecClass, job);
-      extension = codec.getDefaultExtension();
-    }
+
+    // Hardcode compression
+    Class<? extends CompressionCodec> codecClass = getOutputCompressorClass(job, Lz4Codec.class);
+    CompressionCodec codec = ReflectionUtils.newInstance(codecClass, job);
+    extension = codec.getDefaultExtension();
+
     return new ExportManifestRecordWriter<>(fileOut, FileOutputFormat.getOutputPath(job),
         extension);
   }

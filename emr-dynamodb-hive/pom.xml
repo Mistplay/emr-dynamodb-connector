@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.amazon.emr</groupId>
         <artifactId>emr-dynamodb-connector</artifactId>
-        <version>4.15.0-SNAPSHOT</version>
+        <version>4.17.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -116,6 +116,13 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <maxAllowedViolations>0</maxAllowedViolations>
+                </configuration>
             </plugin>
         </plugins>
     </build>

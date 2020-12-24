@@ -14,7 +14,6 @@
 package org.apache.hadoop.dynamodb.filter;
 
 import com.amazonaws.services.dynamodbv2.model.Condition;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +21,16 @@ public class DynamoDBQueryFilter {
 
   private final Map<String, Condition> keyConditions = new HashMap<>();
   private final Map<String, Condition> scanFilter = new HashMap<>();
+
+  private DynamoDBIndexInfo index;
+
+  public DynamoDBIndexInfo getIndex() {
+    return index;
+  }
+
+  public void setIndex(DynamoDBIndexInfo index) {
+    this.index = index;
+  }
 
   public Map<String, Condition> getKeyConditions() {
     return keyConditions;

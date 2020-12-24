@@ -13,8 +13,11 @@
 
 package org.apache.hadoop.hive.dynamodb.read;
 
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-
+import com.amazonaws.services.dynamodbv2.model.TableDescription;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.dynamodb.DynamoDBClient;
@@ -38,11 +41,6 @@ import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.Reporter;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public class HiveDynamoDBInputFormat extends DynamoDBInputFormat {
 
@@ -151,10 +149,13 @@ public class HiveDynamoDBInputFormat extends DynamoDBInputFormat {
         ShimsLoader.getHiveShims().deserializeExpression(filterExprSerialized);
 
     DynamoDBFilterPushdown pushdown = new DynamoDBFilterPushdown();
-    List<KeySchemaElement> schema =
-        client.describeTable(conf.get(DynamoDBConstants.TABLE_NAME)).getKeySchema();
+    TableDescription tableDescription =
+        client.describeTable(conf.get(DynamoDBConstants.TABLE_NAME));
     DynamoDBQueryFilter queryFilter = pushdown.predicateToDynamoDBFilter(
-        schema, hiveDynamoDBMapping, hiveTypeMapping, filterExpr);
+        tableDescription.getKeySchema(),
+        tableDescription.getLocalSecondaryIndexes(),
+        tableDescription.getGlobalSecondaryIndexes(),
+        hiveDynamoDBMapping, hiveTypeMapping, filterExpr);
     return queryFilter;
   }
 

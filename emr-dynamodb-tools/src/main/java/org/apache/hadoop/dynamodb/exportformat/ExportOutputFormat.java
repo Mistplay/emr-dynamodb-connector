@@ -20,7 +20,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.GzipCodec;
+import org.apache.hadoop.io.compress.Lz4Codec;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordWriter;
@@ -32,13 +32,14 @@ public class ExportOutputFormat extends FileOutputFormat<NullWritable, DynamoDBI
   @Override
   public RecordWriter<NullWritable, DynamoDBItemWritable> getRecordWriter(FileSystem ignored,
       JobConf job, String name, Progressable progress) throws IOException {
-    boolean isCompressed = getCompressOutput(job);
+    // Hardcode compression
+    boolean isCompressed = true;
     CompressionCodec codec = null;
     String extension = "";
     DataOutputStream fileOut;
 
     if (isCompressed) {
-      Class<? extends CompressionCodec> codecClass = getOutputCompressorClass(job, GzipCodec.class);
+      Class<? extends CompressionCodec> codecClass =  Lz4Codec.class;
       codec = ReflectionUtils.newInstance(codecClass, job);
       extension = codec.getDefaultExtension();
     }
